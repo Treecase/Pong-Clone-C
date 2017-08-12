@@ -1,0 +1,30 @@
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
+#include "util.h"
+
+
+int init() {
+    int value = 0;
+
+    if (SDL_Init (SDL_INIT_VIDEO)) {
+        SDL_Log ("SDL_Init failed: %s\n", SDL_GetError());
+        value = 1;
+    }
+    if (IMG_Init (IMG_INIT_PNG) != IMG_INIT_PNG) {
+        SDL_Log ("IMG_Init failed: %s\n", IMG_GetError());
+        value = 2;
+    }
+    return value;
+}
+
+SDL_Texture* createTexture (char* location, SDL_Renderer* renderer) {
+    SDL_Texture* tex = NULL;
+    SDL_Surface* surf = IMG_Load (location);
+    if (!surf) SDL_Log ("Failed to load file '%s': %s\n", location, SDL_GetError());
+    else {
+        tex = SDL_CreateTextureFromSurface (renderer, surf);
+        if (!tex) SDL_Log ("Unable to create texture: %s\n", SDL_GetError());
+    }
+}
