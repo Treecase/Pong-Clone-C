@@ -5,22 +5,21 @@
 #include <SDL2/SDL.h>
 
 
-typedef struct bumper_struct {
+typedef struct Bumper {
 
     int x, y;
-    int width, height;
-    SDL_Rect* rect;
+    int w, h;
     SDL_Renderer* renderer;
 
-    void(*setpos)(struct bumper_struct*, int, int);
-    int(*getx)(struct bumper_struct*);
-    int(*gety)(struct bumper_struct*);
+    void(*setpos)(struct Bumper*, int, int);
+    int(*getx)(struct Bumper*);
+    int(*gety)(struct Bumper*);
 
-    void(*setsize)(struct bumper_struct*, int, int);
-    int(*getwidth)(struct bumper_struct*);
-    int(*getheight)(struct bumper_struct*);
+    void(*setsize)(struct Bumper*, int, int);
+    int(*getwidth)(struct Bumper*);
+    int(*getheight)(struct Bumper*);
 
-    void(*draw)(struct bumper_struct*);
+    void(*draw)(struct Bumper*);
 } Bumper;
 
 
@@ -36,7 +35,7 @@ int bumper_getheight (Bumper*);
 
 void bumper_draw (Bumper*);
 
-Bumper newbumper (SDL_Renderer*, int, int, int, int);
+void newbumper (Bumper*, SDL_Renderer*, int, int, int, int);
 
 
 #endif

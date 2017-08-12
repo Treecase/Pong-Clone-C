@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+#include "ball.h"
 #include "bumper.h"
 #include "consts.h"
 #include "util.h"
@@ -21,7 +22,11 @@ int main() {
 
     // create the player's bumper (renderer, x, y, width, height)
     Bumper playerbumper;
-    newbumper (playerbumper, ren, 50, SCREEN_HEIGHT/2, 25, 75);
+    newbumper (&playerbumper, ren, 50, SCREEN_HEIGHT/2, 25, 75);
+
+    // create the game ball
+    Ball ball;
+    newball (&ball, ren, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 15, 15);
 
     SDL_Event e;
     int quit = 0;
@@ -45,7 +50,7 @@ int main() {
         SDL_RenderClear (ren);
 
         playerbumper.draw (&playerbumper);
-//        SDL_Log ("X: %i  Y: %i\n", playerbumper.getx(&playerbumper), playerbumper.gety(&playerbumper));
+        ball.draw (&ball);
 
         // render window
         SDL_RenderPresent (ren);

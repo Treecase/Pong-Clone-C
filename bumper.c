@@ -14,17 +14,16 @@ int bumper_getx (Bumper* b) { return b->x; }
 int bumper_gety (Bumper* b) { return b->y; }
 
 void bumper_setsize (Bumper* b, int width, int height) {
-    b->width = width;
-    b->height = height;
+    b->w = width;
+    b->h = height;
 }
 
-int bumper_getwidth (Bumper* b) { return b->width; }
-int bumper_getheight (Bumper* b) { return b->height; }
+int bumper_getwidth (Bumper* b) { return b->w; }
+int bumper_getheight (Bumper* b) { return b->h; }
 
 void bumper_draw (Bumper* b) {
     // set the rectangle variables
-    b->rect->x = b->x - b->width/2; b->rect->y = b->y - b->height/2;
-    b->rect->w = b->width; b->rect->h = b->height;
+    SDL_Rect r = { b->x - b->w/2, b->y - b->h/2, b->w, b->h };
 
     // save the previous draw colour
     unsigned char red, green, blue, alpha;
@@ -34,7 +33,7 @@ void bumper_draw (Bumper* b) {
     SDL_SetRenderDrawColor (b->renderer, 0xFF, 0x00, 0x00, 0xFF);
 
     // fill the rect
-    SDL_RenderFillRect (b->renderer, b->rect);
+    SDL_RenderFillRect (b->renderer, &r);
 
     // set the draw colour back to the original
     SDL_SetRenderDrawColor (b->renderer, red, green, blue, alpha);
@@ -43,25 +42,18 @@ void bumper_draw (Bumper* b) {
 // create a new bumper
 void newbumper (Bumper* bump, SDL_Renderer* ren, int x, int y, int width, int height) {
 
-    bump.setpos = bumper_setpos;
-    bump.getx = bumper_getx;
-    bump.gety = bumper_gety;
+    bump->setpos = bumper_setpos;
+    bump->getx = bumper_getx;
+    bump->gety = bumper_gety;
 
-    bump.setsize = bumper_setsize;
-    bump.getwidth = bumper_getwidth;
-    bump.getheight = bumper_getheight;
+    bump->setsize = bumper_setsize;
+    bump->getwidth = bumper_getwidth;
+    bump->getheight = bumper_getheight;
 
-    bump.setpos (&bump, x, y);
-    bump.setsize (&bump, width, height);
+    bump->setpos (bump, x, y);
+    bump->setsize (bump, width, height);
 
-    bump.draw = bumper_draw;
+    bump->draw = bumper_draw;
 
-
-    SDL_Rect box;
-    box.x = bump.x; box.y = bump.y;
-    box.w = bump.width; box.h = bump.height;
-
-    bump.rect = &box;
-
-    bump.renderer = ren;
+    bump->renderer = ren;
 }
