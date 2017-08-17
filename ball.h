@@ -2,11 +2,14 @@
 #ifndef BALL_H
 #define BALL_H
 
+#include "bumper.h"
+
 
 typedef struct Ball {
 
     int x, y;
     int w, h;
+    int deltax, deltay;
 
     SDL_Renderer* ren;
 
@@ -19,19 +22,10 @@ typedef struct Ball {
     int(*geth)(struct Ball*);
 
     void(*draw)(struct Ball*);
+    int(*checkcollisions)(struct Ball*, Bumper*);
+    void(*movement)(struct Ball*);
 
 } Ball;
-
-
-void ball_setpos (Ball*, int, int);
-int ball_getx (Ball*);
-int ball_gety (Ball*);
-
-void ball_setsize (Ball*, int, int);
-int ball_getw (Ball*);
-int ball_geth (Ball*);
-
-void ball_draw (Ball*);
 
 void newball (Ball*, SDL_Renderer*, int, int, int, int);
 

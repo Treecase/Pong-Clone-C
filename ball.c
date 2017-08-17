@@ -1,6 +1,7 @@
 
 #include <SDL2/SDL.h>
 
+#include "bumper.h"
 #include "consts.h"
 #include "ball.h"
 
@@ -34,6 +35,50 @@ void ball_draw (Ball* b) {
 
 }
 
+// checks if the ball is within the limits of the specified bumper
+int ball_checkcollisions (Ball* b, Bumper* bumper) {
+    int bumperx = bumper->getx (bumper), bumpery = bumper->gety (bumper);
+    int bumperw = bumper->getw (bumper), bumperh = bumper->geth (bumper);
+
+    int x = b->getx (b), y = b->gety (b);
+    int w = b->getw (b), h = b->geth (b);
+
+    int xbound = 0, ybound = 0;
+    static int count = 0;
+
+    if ((x - w/2 >= bumperx - bumperw/2 && x - w/2 <= bumperx + bumperw/2) || (x + w/2 >= bumperx - bumperw/2 && x + w/2 <= bumperx + bumperw/2)) {
+        xbound = 1;
+    }
+    if ((y - h/2 >= bumpery - bumperh/2 && y - h/2 <= bumpery + bumperh/2) || (y + h/2 >= bumpery - bumperh/2 && y + h/2 <= bumpery + bumperh/2)) {
+        ybound = 1;
+    }
+
+    if (xbound && ybound) {
+        b->deltax = -b->deltax;
+        return 1;
+    }
+    else return 0;
+}
+
+// ball motion
+void ball_movement (Ball* b) {
+
+    static int count = 0;
+    int newx = b->x, newy = b->y;
+
+    if (b->x >= SCREEN_WIDTH || b->x <= 0) b->deltax = -b->deltax;
+//    if (b->y >= SCREEN_WIDTH || b->y <= 0) deltay = -deltay;
+
+    if (count == 0) {
+        newx = b->x + b->deltax;
+//        newy = b->y + deltay;
+    }
+
+    count = (count >= 4) ? 0 : count + 1;
+
+    b->setpos (b, newx, newy);
+}
+
 void newball (Ball* ball, SDL_Renderer* ren, int x, int y, int w, int h) {
 
     ball->setpos = ball_setpos;
@@ -45,9 +90,13 @@ void newball (Ball* ball, SDL_Renderer* ren, int x, int y, int w, int h) {
     ball->geth = ball_geth;
 
     ball->draw = ball_draw;
+    ball->checkcollisions = ball_checkcollisions;
+    ball->movement = ball_movement;
 
     ball->setpos (ball, x, y);
     ball->setsize (ball, w, h);
+    ball->deltax = 1;
+    ball->deltay = 1;
 
     ball->ren = ren;
 }

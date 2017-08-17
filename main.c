@@ -1,6 +1,10 @@
 /*
  * Pong clone in C using SDL2
  *
+ * TODO ADD BALL MOVEMENT
+ * TODO ADD BALL BOUNCES
+ * TODO ADD SCORING
+ *
  */
 
 #include <stdio.h>
@@ -20,13 +24,16 @@ int main() {
     SDL_Window* win = SDL_CreateWindow ("Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     SDL_Renderer* ren = SDL_CreateRenderer (win, -1, SDL_RENDERER_ACCELERATED);
 
-    // create the player's bumper (renderer, x, y, width, height)
+    // create the player's bumper (renderer, x, y, width, heightff)
     Bumper playerbumper;
     newbumper (&playerbumper, ren, 50, SCREEN_HEIGHT/2, 25, 75);
 
+    Bumper enemybumper;
+    newbumper (&enemybumper, ren, SCREEN_WIDTH-50, SCREEN_HEIGHT/2, 25, 75);
+
     // create the game ball
     Ball ball;
-    newball (&ball, ren, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 15, 15);
+    newball (&ball, ren, 97, 76, 15, 15);
 
     SDL_Event e;
     int quit = 0;
@@ -44,12 +51,20 @@ int main() {
                 break; }
             }
         }
+
+        ball.movement (&ball);
+
+        ball.checkcollisions (&ball, &playerbumper);
+        ball.checkcollisions (&ball, &enemybumper);
+
         // set draw color to white
         SDL_SetRenderDrawColor (ren, 0xFF, 0xFF, 0xFF, 0xFF);
         // clear the screen
         SDL_RenderClear (ren);
 
+        // draw game entities
         playerbumper.draw (&playerbumper);
+        enemybumper.draw (&enemybumper);
         ball.draw (&ball);
 
         // render window

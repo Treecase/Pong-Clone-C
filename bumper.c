@@ -18,8 +18,8 @@ void bumper_setsize (Bumper* b, int width, int height) {
     b->h = height;
 }
 
-int bumper_getwidth (Bumper* b) { return b->w; }
-int bumper_getheight (Bumper* b) { return b->h; }
+int bumper_getw (Bumper* b) { return b->w; }
+int bumper_geth (Bumper* b) { return b->h; }
 
 void bumper_draw (Bumper* b) {
     // set the rectangle variables
@@ -47,8 +47,8 @@ void newbumper (Bumper* bump, SDL_Renderer* ren, int x, int y, int width, int he
     bump->gety = bumper_gety;
 
     bump->setsize = bumper_setsize;
-    bump->getwidth = bumper_getwidth;
-    bump->getheight = bumper_getheight;
+    bump->getw = bumper_getw;
+    bump->geth = bumper_geth;
 
     bump->setpos (bump, x, y);
     bump->setsize (bump, width, height);

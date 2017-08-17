@@ -16,8 +16,8 @@ typedef struct Bumper {
     int(*gety)(struct Bumper*);
 
     void(*setsize)(struct Bumper*, int, int);
-    int(*getwidth)(struct Bumper*);
-    int(*getheight)(struct Bumper*);
+    int(*getw)(struct Bumper*);
+    int(*geth)(struct Bumper*);
 
     void(*draw)(struct Bumper*);
 } Bumper;
@@ -30,8 +30,8 @@ int bumper_gety (Bumper*);
 
 void bumper_setsize (Bumper*, int, int);
 
-int bumper_getwidth (Bumper*);
-int bumper_getheight (Bumper*);
+int bumper_getw (Bumper*);
+int bumper_geth (Bumper*);
 
 void bumper_draw (Bumper*);
 
