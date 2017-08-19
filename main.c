@@ -1,13 +1,11 @@
 /*
  * Pong clone in C using SDL2
  *
- * TODO ADD BALL MOVEMENT
- * TODO ADD BALL BOUNCES
+ * TODO FINISH BALL MOVEMENT
  * TODO ADD SCORING
  *
  */
 
-#include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -24,16 +22,24 @@ int main() {
     SDL_Window* win = SDL_CreateWindow ("Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     SDL_Renderer* ren = SDL_CreateRenderer (win, -1, SDL_RENDERER_ACCELERATED);
 
-    // create the player's bumper (renderer, x, y, width, heightff)
-    Bumper playerbumper;
-    newbumper (&playerbumper, ren, 50, SCREEN_HEIGHT/2, 25, 75);
+    // create the player's bumper
+    int bumpersections = 3;
+    int size = 75/bumpersections;
+
+    Bumper bumper[bumpersections];
+    for (int i = 0; i < bumpersections; i++) {
+        Bumper bump;
+        // renderer, x, y, width, height, xreflect, yreflect
+        newbumper (&bump, ren, 50, (SCREEN_HEIGHT/2) - (size) + (size * i), 25, size, 1, bumpersections/2 - i);
+        bumper[i] = bump;
+    }
 
     Bumper enemybumper;
-    newbumper (&enemybumper, ren, SCREEN_WIDTH-50, SCREEN_HEIGHT/2, 25, 75);
+    newbumper (&enemybumper, ren, SCREEN_WIDTH-50, SCREEN_HEIGHT/2, 25, 75, 1, 1);
 
     // create the game ball
     Ball ball;
-    newball (&ball, ren, 97, 76, 15, 15);
+    newball (&ball, ren, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 15, 15);
 
     SDL_Event e;
     int quit = 0;
@@ -47,15 +53,21 @@ int main() {
                 case SDL_MOUSEMOTION: {
                 int x, y;
                 SDL_GetMouseState (&x, &y);
-                playerbumper.setpos (&playerbumper, 50, y);
+                for (int i = 0; i < bumpersections; i++) {
+                    bumper[i].setpos (&bumper[i], 50, (y - size) + (size * i));
+                }
                 break; }
             }
         }
 
-        ball.movement (&ball);
-
-        ball.checkcollisions (&ball, &playerbumper);
+        // check for collisions
+        for (int i = 0; i < bumpersections; i++) {
+            ball.checkcollisions (&ball, &bumper[i]);
+        }
         ball.checkcollisions (&ball, &enemybumper);
+
+        // move the ball
+        ball.movement (&ball);
 
         // set draw color to white
         SDL_SetRenderDrawColor (ren, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -63,7 +75,9 @@ int main() {
         SDL_RenderClear (ren);
 
         // draw game entities
-        playerbumper.draw (&playerbumper);
+        for (int i = 0; i < bumpersections; i++) {
+            bumper[i].draw (&bumper[i]);
+        }
         enemybumper.draw (&enemybumper);
         ball.draw (&ball);
 

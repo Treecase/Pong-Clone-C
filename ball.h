@@ -10,6 +10,7 @@ typedef struct Ball {
     int x, y;
     int w, h;
     int deltax, deltay;
+    int xdirection, ydirection;
 
     SDL_Renderer* ren;
 
