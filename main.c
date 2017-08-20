@@ -30,12 +30,12 @@ int main() {
     for (int i = 0; i < bumpersections; i++) {
         Bumper bump;
         // renderer, x, y, width, height, xreflect, yreflect
-        newbumper (&bump, ren, 50, (SCREEN_HEIGHT/2) - (size) + (size * i), 25, size, 1, abs (bumpersections/2 - i));
+        newbumper (&bump, ren, 50, (SCREEN_HEIGHT/2) - size + (size * i), 25, size, 1, abs (bumpersections/2 - i));
         bumper[i] = bump;
     }
 
     Bumper enemybumper;
-    newbumper (&enemybumper, ren, SCREEN_WIDTH-50, SCREEN_HEIGHT/2, 25, 75, 1, 1);
+    newbumper (&enemybumper, ren, SCREEN_WIDTH-50, SCREEN_HEIGHT/2, 25, 75, 1, 0);
 
     // create the game ball
     Ball ball;
@@ -61,10 +61,8 @@ int main() {
         }
 
         // check for collisions
-        for (int i = 0; i < bumpersections; i++) {
-            ball.checkcollisions (&ball, &bumper[i]);
-        }
-        ball.checkcollisions (&ball, &enemybumper);
+        ball.checkcollisions (&ball, bumper, bumpersections);
+        ball.checkcollisions (&ball, &enemybumper, 1);
 
         // move the ball
         ball.movement (&ball);

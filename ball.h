@@ -24,9 +24,8 @@ typedef struct Ball {
     int(*geth)(struct Ball*);
 
     void(*draw)(struct Ball*);
-    int(*checkcollisions)(struct Ball*, Bumper*);
+    int(*checkcollisions)(struct Ball*, Bumper*, int);
     void(*movement)(struct Ball*);
-
 } Ball;
 
 void newball (Ball*, SDL_Renderer*, int, int, int, int);
