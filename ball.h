@@ -11,6 +11,7 @@ typedef struct Ball {
     int w, h;
     int deltax, deltay;
     int xdirection, ydirection;
+    Bumper* lastcollided;
 
     SDL_Renderer* ren;
 

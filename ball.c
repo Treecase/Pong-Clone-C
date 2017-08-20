@@ -68,11 +68,15 @@ int ball_checkcollisions (Ball* b, Bumper* bumper) {
         ybound = 1;
     }
 
-    // reverse movement direction if there is a collision
-    if (xbound && ybound) {
+    // reverse movement direction if there is a collision with a new bumper
+    if (xbound && ybound && b->lastcollided != bumper) {
+        b->lastcollided = bumper;
+
+        // change the ball's direction
         b->deltax = bumper->getxreflect (bumper);
         b->deltay = bumper->getyreflect (bumper);
         b->xdirection = -b->xdirection;
+
         return 1;
     }
     else return 0;
@@ -81,10 +85,9 @@ int ball_checkcollisions (Ball* b, Bumper* bumper) {
 // ball motion
 void ball_movement (Ball* b) {
 
-    // throttles movement speed
-    // only moves every 2 frames
+    // throttle movement speed
     static int count = 0;
-    count = (count >= 8) ? 0 : count + 1;
+    count = (count >= 1) ? 0 : count + 1;
     if (count != 0) return;
 
     // new coords

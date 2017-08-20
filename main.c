@@ -30,7 +30,7 @@ int main() {
     for (int i = 0; i < bumpersections; i++) {
         Bumper bump;
         // renderer, x, y, width, height, xreflect, yreflect
-        newbumper (&bump, ren, 50, (SCREEN_HEIGHT/2) - (size) + (size * i), 25, size, 1, bumpersections/2 - i);
+        newbumper (&bump, ren, 50, (SCREEN_HEIGHT/2) - (size) + (size * i), 25, size, 1, abs (bumpersections/2 - i));
         bumper[i] = bump;
     }
 
