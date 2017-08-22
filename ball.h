@@ -11,7 +11,7 @@ typedef struct Ball {
     int w, h;
     int deltax, deltay;
     int xdirection, ydirection;
-    Bumper* lastcollided;
+    const int* lastcollided;
 
     SDL_Renderer* ren;
 
@@ -26,6 +26,8 @@ typedef struct Ball {
     void(*draw)(struct Ball*);
     int(*checkcollisions)(struct Ball*, Bumper*, int);
     void(*movement)(struct Ball*);
+
+    int(*main)(struct Ball*, Bumper**, int, int);
 } Ball;
 
 void newball (Ball*, SDL_Renderer*, int, int, int, int);

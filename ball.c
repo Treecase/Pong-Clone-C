@@ -51,7 +51,6 @@ void ball_draw (Ball* b) {
 int ball_checkcollisions (Ball* b, Bumper* bumperlist, int listsize) {
 
     for (int i = 0; i < listsize; i++) {
-
         // bumper variables
         int bumperx = bumperlist[i].getx (&bumperlist[i]), bumpery = bumperlist[i].gety (&bumperlist[i]);
         int bumperw = bumperlist[i].getw (&bumperlist[i]), bumperh = bumperlist[i].geth (&bumperlist[i]);
@@ -75,14 +74,13 @@ int ball_checkcollisions (Ball* b, Bumper* bumperlist, int listsize) {
         // reverse movement direction if there is a collision with a new bumper
         int lastcollidedinlist = 1;
         for (int n = 0; n < listsize; n++) {
-            if (b->lastcollided == &bumperlist[n]) {
+            if (b->lastcollided == (int*)&bumperlist[n]) {
                 lastcollidedinlist = 0;
                 break;
             }
         }
         if (xbound && ybound && lastcollidedinlist) {
-            b->lastcollided = &bumperlist[i];
-            SDL_Log ("ball->lastcollided = %p\n", b->lastcollided);
+            b->lastcollided = (int*)&bumperlist[i];
             // change the ball's direction
             b->deltax = bumperlist[i].getxreflect (&bumperlist[i]);
             b->deltay = bumperlist[i].getyreflect (&bumperlist[i]);
@@ -91,52 +89,12 @@ int ball_checkcollisions (Ball* b, Bumper* bumperlist, int listsize) {
     }
 }
 
-
-/*
-// checks if ball is colliding with bumper
-// returns 1 if it is, 0 otherwise
-int ball_checkcollisions (Ball* b, Bumper* bumper) {
-
-    // bumper variables
-    int bumperx = bumper->getx (bumper), bumpery = bumper->gety (bumper);
-    int bumperw = bumper->getw (bumper), bumperh = bumper->geth (bumper);
-
-    // ball variables
-    int x = b->getx (b), y = b->gety (b);
-    int w = b->getw (b), h = b->geth (b);
-
-    // bools
-    int xbound = 0, ybound = 0;
-
-    // check if the ball is within the x constraints of the bumper
-    if ((x - w/2 >= bumperx - bumperw/2 && x - w/2 <= bumperx + bumperw/2) || (x + w/2 >= bumperx - bumperw/2 && x + w/2 <= bumperx + bumperw/2)) {
-        xbound = 1;
-    }
-    // check if the ball is within the y constraints of the bumper
-    if ((y - h/2 >= bumpery - bumperh/2 && y - h/2 <= bumpery + bumperh/2) || (y + h/2 >= bumpery - bumperh/2 && y + h/2 <= bumpery + bumperh/2)) {
-        ybound = 1;
-    }
-
-    // reverse movement direction if there is a collision with a new bumper
-    if (xbound && ybound && b->lastcollided != bumper) {
-        b->lastcollided = bumper;
-        SDL_Log ("ball->lastcollided = %p\n", b->lastcollided);
-        // change the ball's direction
-        b->deltax = bumper->getxreflect (bumper);
-        b->deltay = bumper->getyreflect (bumper);
-        b->xdirection = -b->xdirection;
-
-        return 1;
-    }
-    else return 0;
-}*/
-
 // ball motion
 void ball_movement (Ball* b) {
 
     // throttle movement speed
     static int count = 0;
-    count = (count >= 8) ? 0 : count + 1;
+    count = (count >= GAME_SPEED) ? 0 : count + 1;
     if (count != 0) return;
 
     // new coords
@@ -145,11 +103,13 @@ void ball_movement (Ball* b) {
     // ball bounces off of screen edges
     if (b->x >= SCREEN_WIDTH || b->x <= 0) {
         b->xdirection = -b->xdirection;
-        b->lastcollided = NULL;
+        if (b->x <= 0) b->lastcollided = LEFT;
+        else b->lastcollided = RIGHT;
     }
     if (b->y >= SCREEN_HEIGHT || b->y <= 0) {
         b->ydirection = -b->ydirection;
-        b->lastcollided = NULL;
+        if (b->y <= 0) b->lastcollided = TOP;
+        else b->lastcollided = BOTTOM;
     }
 
     // set new position
@@ -158,6 +118,22 @@ void ball_movement (Ball* b) {
 
     // set ball's location
     b->setpos (b, newx, newy);
+}
+
+// main loop of the ball
+int ball_main (Ball* ball, Bumper** bumpers, int numbumpers, int bumperlength) {
+
+    // check for collisions
+    for (int i = 0; i < numbumpers; i++)
+        ball->checkcollisions (ball, bumpers[i], bumperlength);
+
+    // move the ball
+    ball->movement (ball);
+
+    // draw the ball
+    ball->draw (ball);
+
+    return *ball->lastcollided;
 }
 
 // initialize a new ball
@@ -178,6 +154,8 @@ void newball (Ball* ball, SDL_Renderer* ren, int x, int y, int w, int h) {
     ball->draw = ball_draw;
     ball->checkcollisions = ball_checkcollisions;
     ball->movement = ball_movement;
+    ball->main = ball_main;
+
 
     // initialize the ball's values
     ball->setpos (ball, x, y);

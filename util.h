@@ -8,7 +8,9 @@
 
 int init();
 
-int cleanup (SDL_Renderer*, SDL_Window*);
+void cleanup (SDL_Renderer*, SDL_Window*);
+
+void drawnumber (SDL_Renderer*, int, const int*);
 
 
 #endif
