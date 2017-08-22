@@ -2,7 +2,7 @@
 #ifndef BALL_H
 #define BALL_H
 
-#include "bumper.h"
+typedef struct Bumper Bumper;
 
 
 typedef struct Ball {

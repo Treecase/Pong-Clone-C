@@ -4,6 +4,8 @@
 
 #include <SDL2/SDL.h>
 
+typedef struct Ball Ball;
+
 
 typedef struct Bumper {
 
@@ -25,22 +27,8 @@ typedef struct Bumper {
     int(*getyreflect)(struct Bumper*);
 
     void(*draw)(struct Bumper*);
+    void(*ai)(struct Bumper*, Ball*, int, int);
 } Bumper;
-
-
-void bumper_setpos (Bumper*, int, int);
-int bumper_getx (Bumper*);
-int bumper_gety (Bumper*);
-
-void bumper_setsize (Bumper*, int, int);
-int bumper_getw (Bumper*);
-int bumper_geth (Bumper*);
-
-void bumper_setreflect (Bumper*, int, int);
-int bumper_getxreflect (Bumper*);
-int bumper_getyreflect (Bumper*);
-
-void bumper_draw (Bumper*);
 
 void newbumper (Bumper*, SDL_Renderer*, int, int, int, int, int, int);
 

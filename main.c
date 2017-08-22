@@ -1,7 +1,7 @@
 /*
  * Pong clone in C using SDL2
  *
- * TODO ADD ENEMY BUMPER AI
+ * TODO FINALIZE BUMPER AI
  *
  */
 
@@ -14,10 +14,11 @@
 #include "util.h"
 
 
-int main() {
+int main (int argc, char* argv[]) {
 
     // initialize
     if (!init()) return 1;
+    if (argc > 1) GAME_SPEED = atoi (argv[1]);
 
     // score
     int leftscore = 0, rightscore = 0;
@@ -79,6 +80,11 @@ int main() {
         // clear the screen
         SDL_RenderClear (ren);
 
+
+        // bumper actions
+        for (int i = 0; i < bumpersections; i++) {
+            enemy[i].ai (&enemy[i], &ball, enemy[bumpersections/2].gety (&enemy[bumpersections/2]), -size + (size * i));
+        }
 
         // ball actions
         int thing = ball.main (&ball, bumpers, 2, 3);

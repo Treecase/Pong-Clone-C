@@ -5,6 +5,7 @@
 
 const static int SCREEN_WIDTH = 640;
 const static int SCREEN_HEIGHT = 480;
+static int GAME_SPEED = 4;
 
 const static int __LEFT = 1;
 const static int __RIGHT = 2;

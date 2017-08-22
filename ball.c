@@ -36,11 +36,11 @@ void ball_draw (Ball* b) {
     unsigned char red, green, blue, alpha;
     SDL_GetRenderDrawColor (b->ren, &red, &green, &blue, &alpha);
 
-    // set the draw color to ball color + render balll
+    // set the draw color to ball color + render ball
     SDL_SetRenderDrawColor (b->ren, 0, 0, 255, 255);
     SDL_RenderFillRect (b->ren, &r);
 
-    // reset the draw color to the one before
+    // reset the draw color
     SDL_SetRenderDrawColor (b->ren, red, green, blue, alpha);
 }
 
@@ -105,6 +105,9 @@ void ball_movement (Ball* b) {
         b->xdirection = -b->xdirection;
         if (b->x <= 0) b->lastcollided = LEFT;
         else b->lastcollided = RIGHT;
+        b->setpos (b, SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+        b->deltax = 1, b->deltay = 0;
+        b->xdirection = 1, b->ydirection = 1;
     }
     if (b->y >= SCREEN_HEIGHT || b->y <= 0) {
         b->ydirection = -b->ydirection;
@@ -160,7 +163,7 @@ void newball (Ball* ball, SDL_Renderer* ren, int x, int y, int w, int h) {
     // initialize the ball's values
     ball->setpos (ball, x, y);
     ball->setsize (ball, w, h);
-    ball->deltax = 1, ball->deltay = 1;
+    ball->deltax = 1, ball->deltay = 0;
     ball->xdirection = 1, ball->ydirection = 1;
     ball->ren = ren;
 }
