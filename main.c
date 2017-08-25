@@ -1,7 +1,8 @@
 /*
  * Pong clone in C using SDL2
  *
- * TODO FINALIZE BUMPER AI
+ * FIXME Enemy bumper sections not moving perfectly
+ *  - Flickering between sections
  *
  */
 
@@ -13,6 +14,15 @@
 #include "consts.h"
 #include "util.h"
 
+
+// define global variables
+const int SCREEN_WIDTH = 640;
+const int SCREEN_HEIGHT = 480;
+const int* LEFT = &_LEFT;
+const int* RIGHT = &_RIGHT;
+const int* TOP = &_TOP;
+const int* BOTTOM = &_BOTTOM;
+int GAME_SPEED = 4;
 
 int main (int argc, char* argv[]) {
 
@@ -38,12 +48,12 @@ int main (int argc, char* argv[]) {
     Bumper bumper[bumpersections];
     for (int i = 0; i < bumpersections; i++) {
         Bumper bump;
-        // renderer, x, y, width, height, xreflect, yreflect
-        newbumper (&bump, ren, 50, (SCREEN_HEIGHT/2) - size + (size * i), 25, size, 1, abs (bumpersections/2 - i));
+        //                  renderer,   x,                  y,                                          width,  height, xreflect,   yreflect
+        newbumper (&bump,   ren,        50,                 (SCREEN_HEIGHT/2) - size + (size * i),      15,     size,   1,          abs (bumpersections/2 - i));
         bumper[i] = bump;
-        Bumper enbump;
-        newbumper (&enbump, ren, SCREEN_WIDTH-50, (SCREEN_HEIGHT/2) - size + (size * i), 25, size, 1, bumpersections/2 - i);
-        enemy[i] = enbump;
+
+        newbumper (&bump,   ren,        SCREEN_WIDTH-50,    (SCREEN_HEIGHT/2) - size + (size * i),      15,     size,   1,          bumpersections/2 - i);
+        enemy[i] = bump;
     }
 
     Bumper* bumpers[] = { bumper, enemy };
@@ -76,14 +86,15 @@ int main (int argc, char* argv[]) {
         }
 
         // background color is black
-        SDL_SetRenderDrawColor (ren, 0, 0, 0, 0xFF);
+        SDL_SetRenderDrawColor (ren, 0, 0, 0, 255);
         // clear the screen
         SDL_RenderClear (ren);
 
 
         // bumper actions
+        int delay = random() % 2;
         for (int i = 0; i < bumpersections; i++) {
-            enemy[i].ai (&enemy[i], &ball, enemy[bumpersections/2].gety (&enemy[bumpersections/2]), -size + (size * i));
+            enemy[i].ai (&enemy[i], &ball, enemy[bumpersections/2].gety (&enemy[bumpersections/2]), -size + (size * i), delay);
         }
 
         // ball actions

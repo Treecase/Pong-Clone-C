@@ -3,19 +3,19 @@
 #define CONSTS_H
 
 
-const static int SCREEN_WIDTH = 640;
-const static int SCREEN_HEIGHT = 480;
-static int GAME_SPEED = 4;
+extern const int SCREEN_WIDTH;
+extern const int SCREEN_HEIGHT;
+extern int GAME_SPEED;
 
-const static int __LEFT = 1;
-const static int __RIGHT = 2;
-const static int __TOP = 3;
-const static int __BOTTOM = 4;
+const static int _LEFT = 1;
+const static int _RIGHT = 2;
+const static int _TOP = 3;
+const static int _BOTTOM = 4;
 
-const static int* LEFT = &__LEFT;
-const static int* RIGHT = &__RIGHT;
-const static int* TOP = &__TOP;
-const static int* BOTTOM = &__BOTTOM;
+extern const int* LEFT;
+extern const int* RIGHT;
+extern const int* TOP;
+extern const int* BOTTOM;
 
 
 #endif

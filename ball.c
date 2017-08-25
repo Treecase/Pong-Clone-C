@@ -37,7 +37,7 @@ void ball_draw (Ball* b) {
     SDL_GetRenderDrawColor (b->ren, &red, &green, &blue, &alpha);
 
     // set the draw color to ball color + render ball
-    SDL_SetRenderDrawColor (b->ren, 0, 0, 255, 255);
+    SDL_SetRenderDrawColor (b->ren, 255, 255, 255, 255);
     SDL_RenderFillRect (b->ren, &r);
 
     // reset the draw color

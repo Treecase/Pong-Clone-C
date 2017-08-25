@@ -47,7 +47,7 @@ void bumper_draw (Bumper* b) {
     SDL_GetRenderDrawColor (b->renderer, &red, &green, &blue, &alpha);
 
     // set the draw color of bumper + render bumper
-    SDL_SetRenderDrawColor (b->renderer, 255, 0, 0, 255);
+    SDL_SetRenderDrawColor (b->renderer, 255, 255, 255, 255);
     SDL_RenderFillRect (b->renderer, &r);
 
 /*    // draw box around bumper (!!~~NOTE: FOR DEBUG~~!!)
@@ -59,10 +59,12 @@ void bumper_draw (Bumper* b) {
 }
 
 // main loop of the bumper
-void bumper_ai (Bumper* b, Ball* ball, int middle, int offset) {
+void bumper_ai (Bumper* b, Ball* ball, int middle, int offset, int delay) {
+
     static int count = 0;
-    count = (count >= GAME_SPEED + (random() % 2)) ? 0 : count+1;
+    count = (count >= GAME_SPEED + delay) ? 0 : count + 1;
     if (count != 0) return;
+
     if (b->y < ball->gety (ball)) {
         b->setpos (b, b->x, middle + 1 + offset);
     }

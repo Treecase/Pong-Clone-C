@@ -27,7 +27,7 @@ typedef struct Bumper {
     int(*getyreflect)(struct Bumper*);
 
     void(*draw)(struct Bumper*);
-    void(*ai)(struct Bumper*, Ball*, int, int);
+    void(*ai)(struct Bumper*, Ball*, int, int, int);
 } Bumper;
 
 void newbumper (Bumper*, SDL_Renderer*, int, int, int, int, int, int);

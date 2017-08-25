@@ -64,9 +64,9 @@ void drawnumber (SDL_Renderer* ren, int number, const int* side) {
 
     // create the rect for the texture to display
     SDL_Rect r;
-    r.y = SCREEN_HEIGHT/8, r.w = 16, r.h = 32;
+    r.y = SCREEN_HEIGHT/16, r.w = 32, r.h = 64;
     if (*side == 1) r.x = SCREEN_WIDTH/8;
-    if (*side == 2) r.x = SCREEN_WIDTH - (SCREEN_WIDTH/8);
+    if (*side == 2) r.x = SCREEN_WIDTH - (SCREEN_WIDTH/8) - 32;
 
     // add the texture to the render
     SDL_RenderCopy (ren, numbers[number], NULL, &r);
