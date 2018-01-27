@@ -86,7 +86,7 @@ int main (int argc, char* argv[]) {
                 break;
 
             case SDL_MOUSEMOTION:
-                player.y = e.motion.y;
+                player.y = e.motion.y - player.h/2;
                 break;
             }
         }
@@ -95,15 +95,16 @@ int main (int argc, char* argv[]) {
         SDL_RenderClear (ren);
 
 
-        if (enemy.y > ball.y)
+        if (enemy.y + enemy.h/2 > ball.y)
             enemy.y -= 1;
-        else if (enemy.y < ball.y)
+        else if (enemy.y + enemy.h/2 < ball.y)
             enemy.y += 1;
 
 
         if (ball.x >= SCREEN_WIDTH) {
             leftscore++;
             ball.dx = -ball.dx;
+            ball.dy = 0;
             ball.x = SCREEN_WIDTH / 2;
             ball.y = SCREEN_HEIGHT / 2;
             ball.last_hit = NULL;
@@ -111,6 +112,7 @@ int main (int argc, char* argv[]) {
         if (ball.x < 0) {
             rightscore++;
             ball.dx = -ball.dx;
+            ball.dy = 0;
             ball.x = SCREEN_WIDTH / 2;
             ball.y = SCREEN_HEIGHT / 2;
             ball.last_hit = NULL;
@@ -123,11 +125,11 @@ int main (int argc, char* argv[]) {
 
         if (ball_checkcollisions (ball, enemy)) {
             ball.dx = -ball.dx;
-            ball.dy = (ball.y - enemy.y) / 25;
+            ball.dy = (ball.y - (enemy.y+enemy.h/2)) / 15;
         }
         if (ball_checkcollisions (ball, player)) {
             ball.dx = -ball.dx;
-            ball.dy = (ball.y - player.y) / 25;
+            ball.dy = (ball.y - (player.y+player.h/2)) / 15;
         }
 
         ball.x += ball.dx;
