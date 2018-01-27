@@ -15,5 +15,7 @@ void drawnumber (SDL_Renderer *, int, int);
 
 void init_scores (SDL_Renderer *);
 
+int print_usage (const char *name);
+
 
 #endif

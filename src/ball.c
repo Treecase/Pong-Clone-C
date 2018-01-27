@@ -18,8 +18,10 @@ void draw_ball (Ball b) {
     ball and bumper*/
 int ball_checkcollisions (Ball ball, Bumper bump) {
 
-    if ((ball.x >= bump.x && ball.x + ball.w <= bump.x + bump.w)
-     && (ball.y >= bump.y && ball.y + ball.h <= bump.y + bump.h))
+    if (((ball.x >= bump.x && ball.x <= bump.x + bump.w)
+      || (ball.x+ball.w >= bump.x && ball.x + ball.w <= bump.x + bump.w))
+     && ((ball.y >= bump.y && ball.y <= bump.y + bump.h)
+      || (ball.y+ball.h >= bump.y && ball.y + ball.h <= bump.y + bump.h)))
         return 1;
     return 0;
 }

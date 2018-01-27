@@ -11,7 +11,7 @@ typedef struct Bumper Bumper;
 
 typedef struct Ball {
 
-    int x, y;
+    double x, y;
     int w, h;
     double dx, dy;
     Bumper *last_hit;

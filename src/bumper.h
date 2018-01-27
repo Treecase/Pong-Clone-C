@@ -9,7 +9,7 @@ typedef struct Ball Ball;
 
 typedef struct Bumper {
 
-    int x, y;
+    double x, y;
     int w, h;
     int xreflect, yreflect;
     SDL_Renderer* renderer;

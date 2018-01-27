@@ -16,8 +16,6 @@
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-int GAME_SPEED = 4;
-
 
 
 /* pong */
@@ -31,14 +29,22 @@ int main (int argc, char* argv[]) {
     Bumper enemy, player;
     Ball ball;
 
+    double ENEMYSPEED = 1.0;
+    int DIFFICULTY = 15;
 
-    /* libs initialization */
+
+    for (int i = 1; i < argc; ++i) {
+        if (!strcmp (argv[i], "-d") && i+1 < argc)
+            DIFFICULTY = atoi (argv[++i]);
+        else if (!strcmp (argv[i], "-h"))
+            return print_usage (argv[0]);
+        else
+            return print_usage (argv[0]);
+    }
+
+    /* libs init */
     if (!init())
         return 1;
-    // TODO : proper argument handling
-    if (argc > 1)
-        GAME_SPEED = atoi (argv[1]);
-
 
     /* init vars */
     leftscore = rightscore = 0;
@@ -88,6 +94,15 @@ int main (int argc, char* argv[]) {
             case SDL_MOUSEMOTION:
                 player.y = e.motion.y - player.h/2;
                 break;
+
+            case SDL_KEYDOWN:
+                switch (e.key.keysym.sym) {
+                case 'q':
+                case SDLK_ESCAPE:
+                    quit = 1;
+                    break;
+                }
+                break;
             }
         }
 
@@ -95,13 +110,13 @@ int main (int argc, char* argv[]) {
         SDL_RenderClear (ren);
 
 
-        if (enemy.y + enemy.h/2 > ball.y)
-            enemy.y -= 1;
-        else if (enemy.y + enemy.h/2 < ball.y)
-            enemy.y += 1;
+        if (enemy.y != (ball.y - enemy.h/2) + ball.h/2)
+            enemy.y -= ENEMYSPEED *
+                (enemy.y - ball.y + enemy.h/2 - ball.h/2) / DIFFICULTY;
 
 
-        if (ball.x >= SCREEN_WIDTH) {
+        if (ball.x >= SCREEN_WIDTH
+         || ball.y >= SCREEN_HEIGHT+50 || ball.y < -50) {
             leftscore++;
             ball.dx = -ball.dx;
             ball.dy = 0;
@@ -117,7 +132,8 @@ int main (int argc, char* argv[]) {
             ball.y = SCREEN_HEIGHT / 2;
             ball.last_hit = NULL;
         }
-        if (ball.y >= SCREEN_HEIGHT || ball.y < 0) {
+        if (ball.y >= SCREEN_HEIGHT || ball.y < 0
+         || ball.y + ball.h >= SCREEN_HEIGHT || ball.y + ball.h < 0) {
             ball.dy = -ball.dy;
             ball.last_hit = NULL;
         }
@@ -125,11 +141,11 @@ int main (int argc, char* argv[]) {
 
         if (ball_checkcollisions (ball, enemy)) {
             ball.dx = -ball.dx;
-            ball.dy = (ball.y - (enemy.y+enemy.h/2)) / 15;
+            ball.dy = (ball.y - (enemy.y+enemy.h/2)) / DIFFICULTY;
         }
         if (ball_checkcollisions (ball, player)) {
             ball.dx = -ball.dx;
-            ball.dy = (ball.y - (player.y+player.h/2)) / 15;
+            ball.dy = (ball.y - (player.y+player.h/2)) / DIFFICULTY;
         }
 
         ball.x += ball.dx;
@@ -151,8 +167,6 @@ int main (int argc, char* argv[]) {
             SDL_Delay (3);
         }
     }
-
-    SDL_Log ("GAME OVER!\n");
 
     tex_cleanup();
     SDL_DestroyRenderer (ren);
