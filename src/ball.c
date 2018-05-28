@@ -1,23 +1,23 @@
-
-#include <SDL2/SDL.h>
+/*
+ * Ball functions
+ *
+ */
 
 #include "ball.h"
+#include "graphics.h"
 
 
 
 /* render the ball */
-void draw_ball (Ball b) {
-
-    SDL_Rect r = { b.x, b.y, b.w, b.h };
-
-    SDL_SetRenderDrawColor (b.ren, 255, 255, 255, 255);
-    SDL_RenderFillRect (b.ren, &r);
+inline void draw_ball (Ball b) {
+    draw_rect (b.x, b.y, b.w, b.h);
 }
 
 /* ball_checkcollisions: check for collisions b/t
     ball and bumper*/
 int ball_checkcollisions (Ball ball, Bumper bump) {
 
+    /* FIXME oh, no... */
     if (((ball.x >= bump.x && ball.x <= bump.x + bump.w)
       || (ball.x+ball.w >= bump.x && ball.x + ball.w <= bump.x + bump.w))
      && ((ball.y >= bump.y && ball.y <= bump.y + bump.h)

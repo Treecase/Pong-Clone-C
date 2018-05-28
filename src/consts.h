@@ -3,15 +3,13 @@
 #define CONSTS_H
 
 
-#include <SDL2/SDL.h>
 
-
-
-extern const int SCREEN_WIDTH;
-extern const int SCREEN_HEIGHT;
-extern SDL_Renderer *ren;
+const static int WIDTH  = 640;
+const static int HEIGHT = 480;
+/* why are these extern? */
 extern int GAME_SPEED;
 
+/* directions (why?) */
 enum {
     LEFT = 1,
     RIGHT,

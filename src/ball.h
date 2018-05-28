@@ -9,14 +9,14 @@
 typedef struct Bumper Bumper;
 
 
+/* Ball:
+    pong ball */
 typedef struct Ball {
 
     double x, y;
     int w, h;
     double dx, dy;
     Bumper *last_hit;
-
-    SDL_Renderer *ren;
 } Ball;
 
 

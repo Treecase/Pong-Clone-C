@@ -2,20 +2,14 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <stdio.h>
 
-#include <SDL2/SDL.h>
-
-
-
-int init();
-
-void tex_cleanup();
-
-void drawnumber (SDL_Renderer *, int, int);
-
-void init_scores (SDL_Renderer *);
+#define dlog(...)   ({  printf ("Log: "); printf (__VA_ARGS__); })
+#define error(...)  ({  fprintf (stderr, "Error: %s - ", __func__); fprintf (stderr, __VA_ARGS__);  })
+#define fatal(...)  ({  error (__VA_ARGS__); exit (EXIT_FAILURE);   })
 
 int print_usage (const char *name);
 
 
 #endif
+

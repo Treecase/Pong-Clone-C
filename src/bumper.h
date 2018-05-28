@@ -2,18 +2,16 @@
 #ifndef BUMPER_H
 #define BUMPER_H
 
-#include <SDL2/SDL.h>
-
 typedef struct Ball Ball;
 
 
+/* Bumper:
+    pong bumper */
 typedef struct Bumper {
 
     double x, y;
     int w, h;
     int xreflect, yreflect;
-    SDL_Renderer* renderer;
-
 } Bumper;
 
 void draw_bumper (Bumper bump);
@@ -21,3 +19,4 @@ void bumper_ai (Bumper b, Ball *ball);
 
 
 #endif
+
