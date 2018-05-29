@@ -6,8 +6,9 @@
 #ifndef __GRAPHICS_H
 #define __GRAPHICS_H
 
+typedef struct Bumper Bumper;
 
-int get_input(void);
+int get_input (Bumper *controlled);
 
 void draw_frame(void);
 

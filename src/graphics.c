@@ -6,6 +6,7 @@
 #include "util.h"
 #include "graphics.h"
 #include "consts.h"
+#include "bumper.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -17,6 +18,11 @@ void free_number_imgs(void);
 SDL_Texture *tex_from_img (const char *filename);
 
 
+unsigned  SCALE = 15;
+unsigned  WIDTH = 48;
+unsigned HEIGHT = 32;
+
+
 SDL_Window   *win = NULL;
 SDL_Renderer *ren = NULL;
 int graphics_init = 0;
@@ -26,8 +32,8 @@ SDL_Texture *number_img[10];
 
 
 /* get_input:
-    -- */
-int get_input(void) {
+    read input */
+int get_input (Bumper *controlled) {
 
     int y = 0;
 
@@ -39,15 +45,26 @@ int get_input(void) {
             return -1;
             break;
 
-        case SDL_MOUSEMOTION:
-            y = e.motion.y;
-            break;
+        case SDL_MOUSEMOTION:{
+            double newpos = e.motion.y / SCALE - controlled->h / 2;
+            if (newpos >= 0 && newpos + controlled->h <= HEIGHT)
+                controlled->y = newpos;
+            } break;
 
         case SDL_KEYDOWN:
             switch (e.key.keysym.sym) {
             case 'q':
             case SDLK_ESCAPE:
                 return -1;
+                break;
+
+            case 'w':
+                if (controlled->y > 0)
+                    controlled->y--;
+                break;
+            case 's':
+                if (controlled->y + controlled->h < HEIGHT)
+                    controlled->y++;
                 break;
             }
             break;
@@ -61,7 +78,7 @@ int get_input(void) {
 void draw_frame(void) {
 
     SDL_RenderPresent (ren);
-    SDL_SetRenderDrawColor (ren, 0x00,0x00,0x00,0x00);
+    SDL_SetRenderDrawColor (ren, 0x00,0x00,0x00,0xFF);
     SDL_RenderClear (ren);
 }
 
@@ -70,12 +87,13 @@ void draw_frame(void) {
 void draw_number (int x, int y, int n) {
 
     SDL_Rect r;
-    r.x = x;
-    r.y = y;
+    r.x = x * SCALE;
+    r.y = y * SCALE;
 
     SDL_QueryTexture (number_img[n], NULL,NULL, &r.w,&r.h);
-    r.w *= 10;
-    r.h *= 10;
+
+    r.w *= SCALE;
+    r.h *= SCALE/1.25;
 
     SDL_RenderCopy (ren, number_img[n], NULL, &r);
 }
@@ -84,7 +102,7 @@ void draw_number (int x, int y, int n) {
     load the number images */
 void load_number_imgs(void) {
 
-    char img_name[11];
+    char img_name[12];
 
     for (int i = 0; i < 10; ++i) {
         snprintf (img_name, 11, "imgs/%i.png", i);
@@ -95,6 +113,7 @@ void load_number_imgs(void) {
 /* free_number_imgs:
     free the number images */
 void free_number_imgs(void) {
+
     for (int i = 0; i < 10; ++i) {
         SDL_DestroyTexture (number_img[i]);
         number_img[i] = NULL;
@@ -124,7 +143,7 @@ SDL_Texture *tex_from_img (const char *filename) {
     draw a rectangle to the screen */
 void draw_rect (int x, int y, int w, int h) {
 
-    SDL_Rect r = { x,y, w,h };
+    SDL_Rect r = { x*SCALE,y*SCALE, w*SCALE,h*SCALE };
 
     SDL_SetRenderDrawColor (ren, 0xFF,0xFF,0xFF,0xFF);
     SDL_RenderFillRect (ren, &r);
@@ -144,7 +163,7 @@ void init_graphics(void) {
         /* init window, etc. */
         win = SDL_CreateWindow ("Pong",
             SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,
-            WIDTH,HEIGHT,
+            WIDTH * SCALE,HEIGHT * SCALE,
             0);
         if (!win)
             fatal ("failed to create window: %s\n", SDL_GetError());
@@ -152,6 +171,9 @@ void init_graphics(void) {
         ren = SDL_CreateRenderer (win, -1, SDL_RENDERER_ACCELERATED);
         if (!ren)
             fatal ("failed to create renderer: %s\n", SDL_GetError());
+
+        SDL_SetRenderDrawColor (ren, 0x00,0x00,0x00,0xFF);
+        SDL_RenderClear (ren);
 
         load_number_imgs();
 

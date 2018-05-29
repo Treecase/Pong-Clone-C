@@ -11,6 +11,16 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
+
+long double millis(void);
+
+/* defined in graphics.c */
+extern unsigned  SCALE;
+extern unsigned  WIDTH;
+extern unsigned HEIGHT;
+
+int DIFFICULTY = 15;
 
 
 
@@ -23,20 +33,24 @@ int main (int argc, char* argv[]) {
     Bumper enemy, player;
     Ball ball;
 
-    /* what are these? */
-    double ENEMYSPEED = 1.0;
-    int DIFFICULTY = 15;
-
 
     /* arg handling */
     for (int i = 1; i < argc; ++i) {
         /* -d: set difficulty */
         if (!strcmp (argv[i], "-d") && i+1 < argc)
             DIFFICULTY = atoi (argv[++i]);
+        /* -s: set scaling */
+        else if (!strcmp (argv[i], "-s") && i+1 < argc)
+            SCALE = atoi (argv[++i]);
+        /* -w: set window size */
+        else if (!strcmp (argv[i], "-c") && i+2 < argc) {
+             WIDTH = atoi (argv[++i]);
+            HEIGHT = atoi (argv[++i]);
+        }
         /* -h: print help */
         else if (!strcmp (argv[i], "-h"))
             return print_usage (argv[0]);
-        /* bad arg */
+        /* invalid arg */
         else
             return print_usage (argv[0]);
     }
@@ -47,96 +61,89 @@ int main (int argc, char* argv[]) {
     /* init vars */
     leftscore = rightscore = 0;
 
-    /* TODO get rid of this crap */
-    player.x = 50;
-    player.y = HEIGHT/2;
-    player.w = 15;
-    player.h = 75;
-
-    enemy.x = WIDTH - 50;
-    enemy.y = HEIGHT/2;
-    enemy.w = 15;
-    enemy.h = 75;
-
-    ball.x = WIDTH/2;
-    ball.y = HEIGHT/2;
-    ball.w = ball.h = 15;
-    ball.dx = 1;
-    ball.dy = 0;
+    player = (Bumper){ .x=1,       .y=HEIGHT/2 - 5/2, .w=1, .h=5 };
+    enemy  = (Bumper){ .x=WIDTH-1, .y=HEIGHT/2 - 5/2, .w=1, .h=5 };
+    ball   = (Ball  ){ .x=WIDTH/2, .y=HEIGHT/2, .w=1, .h=1, .dx=0.1, .dy=0 };
 
 
     /* main loop */
+    long double lastframe = millis();
+    int update_screen = 0;
     int quit = 0;
     while (!quit) {
 
-        int r;
-        switch (r = get_input()) {
-        case -1:
+        if (get_input (&player) == -1)
             quit = 1;
-            break;
+        
+        if (millis() - lastframe >= 0.005)
+            update_screen = 1;
 
-        default:
-            player.y = r - player.h/2;
-            break;
-        }
+        if (update_screen) {
 
-        /* TODO get rid of _this_ crap, too */
-        if (enemy.y != (ball.y - enemy.h/2) + ball.h/2)
-            enemy.y -= ENEMYSPEED *
-                (enemy.y - ball.y + enemy.h/2 - ball.h/2) / DIFFICULTY;
+            bumper_ai (&enemy, ball);
 
+            /*  ball went out on the right (or went out of bounds in y)
+                (ie player got a point) */
+            if (ball.x >= WIDTH
+             || ball.y >= HEIGHT+50 || ball.y < -50) {
+                leftscore++;
+                ball.dx *= -1;
+                ball.dy  = 0;
+                ball.x   =  WIDTH / 2;
+                ball.y   = HEIGHT / 2;
 
-        if (ball.x >= WIDTH
-         || ball.y >= HEIGHT+50 || ball.y < -50) {
-            leftscore++;
-            ball.dx = -ball.dx;
-            ball.dy = 0;
-            ball.x = WIDTH / 2;
-            ball.y = HEIGHT / 2;
-            ball.last_hit = NULL;
-        }
-        if (ball.x < 0) {
-            rightscore++;
-            ball.dx = -ball.dx;
-            ball.dy = 0;
-            ball.x = WIDTH / 2;
-            ball.y = HEIGHT / 2;
-            ball.last_hit = NULL;
-        }
-        if (ball.y >= HEIGHT || ball.y < 0
-         || ball.y + ball.h >= HEIGHT || ball.y + ball.h < 0) {
-            ball.dy = -ball.dy;
-            ball.last_hit = NULL;
-        }
+                ball.last_hit = NULL;
+            }
+            /*  ball went out on the left
+                (ie enemy got a point) */
+            if (ball.x < 0) {
+                rightscore++;
+                ball.dx *= -1;
+                ball.dy  = 0;
+                ball.x   =  WIDTH / 2;
+                ball.y   = HEIGHT / 2;
 
+                ball.last_hit = NULL;
+            }
+            /*  ball went out in y */
+            if (ball.y >= HEIGHT || ball.y + ball.h < 0) {
+                ball.dy *= -1;
+                ball.last_hit = NULL;
+            }
 
-        if (ball_checkcollisions (ball, enemy)) {
-            ball.dx = -ball.dx;
-            ball.dy = (ball.y - (enemy.y+enemy.h/2)) / DIFFICULTY;
-        }
-        if (ball_checkcollisions (ball, player)) {
-            ball.dx = -ball.dx;
-            ball.dy = (ball.y - (player.y+player.h/2)) / DIFFICULTY;
-        }
+            /* bounce the ball off of bumpers */
+            ball_bounce (&ball, enemy);
+            ball_bounce (&ball, player);
 
-        ball.x += ball.dx;
-        ball.y += ball.dy;
+            ball.x += ball.dx;
+            ball.y += ball.dy / DIFFICULTY;
 
-        if (leftscore > 9 || rightscore > 9)
-            quit = 1;
+            if (leftscore > 9 || rightscore > 9)
+                quit = 1;
 
 
-        if (!quit) {
+            /* draw to screen */
+            draw_number (2,1,       leftscore);
+            draw_number (WIDTH-6,1, rightscore);
+
             draw_bumper (player);
             draw_bumper (enemy);
             draw_ball (ball);
 
-            draw_number (0,0,        leftscore);
-            draw_number (WIDTH-64,0, rightscore);
-
             draw_frame();
+
+            /* delay stuff */
+            lastframe = millis();
+            update_screen = 0;
         }
     }
     return EXIT_SUCCESS;
+}
+
+/* millis: get clock time in milliseconds */
+long double millis(void) {
+    struct timespec tp;
+    clock_gettime (CLOCK_MONOTONIC, &tp);
+    return (tp.tv_sec) + (tp.tv_nsec / 1000000000.0);
 }
 

@@ -13,15 +13,16 @@ typedef struct Bumper Bumper;
     pong ball */
 typedef struct Ball {
 
-    double x, y;
-    int w, h;
-    double dx, dy;
+    double  x,y;
+    int     w,h;
+    double  dx,dy;
     Bumper *last_hit;
 } Ball;
 
 
 void draw_ball (Ball ball);
 int ball_checkcollisions (Ball, Bumper);
+void ball_bounce (Ball *, Bumper);
 
 
 #endif

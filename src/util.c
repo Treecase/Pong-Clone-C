@@ -8,6 +8,10 @@
 #include <stdio.h>
 
 
+/* between: min <= num <= max? */
+inline int between (int num, int min, int max) {
+    return min <= num && num <= max;
+}
 
 /* print_usage: print usage information */
 int print_usage (const char *name) {

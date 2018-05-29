@@ -9,13 +9,14 @@ typedef struct Ball Ball;
     pong bumper */
 typedef struct Bumper {
 
-    double x, y;
-    int w, h;
-    int xreflect, yreflect;
+    double   x,y;
+    unsigned w,h;
+    int      xreflect,
+             yreflect;
 } Bumper;
 
 void draw_bumper (Bumper bump);
-void bumper_ai (Bumper b, Ball *ball);
+void bumper_ai (Bumper *b, Ball ball);
 
 
 #endif
